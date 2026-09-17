@@ -18,15 +18,15 @@
     </div>
 
     <script>
-        // 1. Включаем песочницу
+        // 1. СНАЧАЛА строго включаем песочницу!
         Paddle.Environment.set("sandbox");
 
-        // 2. Инициализируем твоим токеном (ВСТАВЬ СВОЙ ТОКЕН НИЖЕ ВМЕСТО ТЕКСТА)
+        // 2. И только ПОТОМ скармливаем ей токен
         Paddle.Initialize({ 
             token: "test_162de7add7ab96901f3143b6036" 
         });
 
-        // 3. Ловим клик и выводим ошибку на экран, если она будет
+        // 3. Открытие чекаута при клике
         document.getElementById('pay-button').addEventListener('click', function() {
             Paddle.Checkout.open({
                 settings: {
@@ -35,7 +35,7 @@
                 },
                 items: [
                     {
-                        priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой Price ID Премиума
+                        priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой ID Премиума
                         quantity: 1
                     }
                 ],
@@ -43,9 +43,7 @@
                     email: "test-valera@example.com"
                 }
             }).catch(function(error) {
-                // Если произойдет ошибка, мы покажем её прямо на экране крупным текстом
-                alert("Ошибка Paddle: " + error.message + " (Код: " + error.code + ")");
-                console.error(error);
+                alert("Ошибка: " + error.message);
             });
         });
     </script>
