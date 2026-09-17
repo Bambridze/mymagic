@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тест оплаты S PRODUCTION</title>
-    <!-- Подключаем скрипт -->
-    <script src="https://paddle.com"></script>
 </head>
 <body style="font-family: sans-serif; text-align: center; padding-top: 100px; background-color: #f4f4f9;">
 
@@ -13,56 +11,41 @@
         <h2 style="margin-bottom: 10px;">S PRODUCTION</h2>
         <p style="color: #666; margin-bottom: 30px;">Тестирование активации Премиума</p>
         
-        <!-- Кнопка изначально выключена (disabled), пока Paddle не загрузится -->
-        <button id="pay-button" disabled style="background: #cccccc; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 6px; cursor: not-allowed; font-weight: bold;">
-            Загрузка платежной системы...
+        <button id="pay-button" style="background: #2196F3; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+            Купить Премиум
         </button>
     </div>
 
+    <!-- Официальный динамический загрузчик Paddle.js, обходящий блокировки -->
     <script>
-        // 1. Задаем среду песочницы
-        Paddle.Environment.set("sandbox");
+        (function(w,d,s,o,f,js,fjs){
+            w['PaddleObject']=o;w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)},w[o].l=1*new Date();
+            js=d.createElement(s),fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs);
+        }(window,document,'script','Paddle','https://paddle.com'));
 
-        // 2. Инициализируем и ждем статус готовности
+        // Настройка среды и ключа
+        Paddle.Environment.set("sandbox");
         Paddle.Initialize({ 
-            token: "test_162de7add7ab96901f3143b6036",
-            eventCallback: function(data) {
-                // Выводим в лог все события для контроля
-                console.log("Paddle Event:", data);
-            }
+            token: "test_162de7add7ab96901f3143b6036" 
         });
 
-        // Небольшая задержка, чтобы дать скрипту связаться с сервером
-        setTimeout(function() {
-            var btn = document.getElementById('pay-button');
-            btn.disabled = false;
-            btn.innerText = "Купить Премиум";
-            btn.style.background = "#2196F3";
-            btn.style.cursor = "pointer";
-            console.log("Paddle.js успешно активирован на странице");
-        }, 1000);
-
-        // 3. Вешаем вызов окна на клик
+        // Прямой вызов окна без проверок готовности
         document.getElementById('pay-button').addEventListener('click', function() {
-            try {
-                Paddle.Checkout.open({
-                    settings: {
-                        displayMode: "overlay",
-                        locale: "ru"
-                    },
-                    items: [
-                        {
-                            priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой ID Премиума
-                            quantity: 1
-                        }
-                    ],
-                    customer: {
-                        email: "test-valera@example.com"
+            Paddle.Checkout.open({
+                settings: {
+                    displayMode: "overlay",
+                    locale: "ru"
+                },
+                items: [
+                    {
+                        priceId: "pri_01m1mn9bh6ktksze0sgtych7mg",
+                        quantity: 1
                     }
-                });
-            } catch (err) {
-                alert("Критическая ошибка вызова: " + err.message);
-            }
+                ],
+                customer: {
+                    email: "test-valera@example.com"
+                }
+            });
         });
     </script>
 </body>
