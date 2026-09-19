@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тест оплаты S PRODUCTION</title>
+    <!-- Подключаем скрипт Paddle v3 -->
+    <script src="https://paddle.com"></script>
 </head>
 <body style="font-family: sans-serif; text-align: center; padding-top: 100px; background-color: #f4f4f9;">
 
@@ -16,21 +18,17 @@
         </button>
     </div>
 
-    <!-- Официальный динамический загрузчик Paddle.js, обходящий блокировки -->
     <script>
-        (function(w,d,s,o,f,js,fjs){
-            w['PaddleObject']=o;w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)},w[o].l=1*new Date();
-            js=d.createElement(s),fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs);
-        }(window,document,'script','Paddle','https://paddle.com'));
-
-        // Настройка среды и ключа
-        Paddle.Environment.set("sandbox");
-        Paddle.Initialize({ 
-            token: "test_162de7add7ab96901f3143b6036" 
-        });
-
-        // Прямой вызов окна без проверок готовности
         document.getElementById('pay-button').addEventListener('click', function() {
+            // Включаем песочницу СТРОГО в момент клика
+            Paddle.Environment.set("sandbox");
+            
+            // Инициализируем и сразу же открываем чекаут, не давая скрипту уйти в блок домена
+            Paddle.Initialize({ 
+                token: "ТВОЙ_ТОКЕН_ЗДЕСЬ" 
+            });
+
+            // Запускаем окно оплаты
             Paddle.Checkout.open({
                 settings: {
                     displayMode: "overlay",
@@ -38,7 +36,7 @@
                 },
                 items: [
                     {
-                        priceId: "pri_01m1mn9bh6ktksze0sgtych7mg",
+                        priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой ID Премиума
                         quantity: 1
                     }
                 ],
