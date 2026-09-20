@@ -3,48 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Тест оплаты S PRODUCTION</title>
+    
+    <!-- 1. Подключаем Paddle v3 строго в head, как требует дока -->
     <script src="https://paddle.com"></script>
-</head>
-<body style="font-family: sans-serif; text-align: center; padding-top: 100px;">
-
-    <button id="pay-button" style="background: #2196F3; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 6px; cursor: pointer; font-weight: bold;">
-        Оплатить счет
-    </button>
-
-    <script>
+    <script type="text/javascript">
+        // 2. Инициализируем сразу при загрузке, чтобы домен прошёл проверку безопасности
         Paddle.Environment.set("sandbox");
         Paddle.Initialize({ 
             token: "test_162de7add7ab96901f3143b6036" 
         });
+    </script>
+</head>
+<body style="font-family: sans-serif; text-align: center; padding-top: 100px; background-color: #f4f4f9;">
 
-        // Хитрый скрипт: вытаскиваем номер транзакции из адреса страницы
+    <div style="background: white; display: inline-block; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <h2>S PRODUCTION</h2>
+        <p style="color: #666; margin-bottom: 30px;">Тестирование активации Премиума</p>
+        
+        <button id="pay-button" style="background: #2196F3; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+            Купить Премиум
+        </button>
+    </div>
+
+    <script type="text/javascript">
+        // 3. Логика кнопки: если в ссылке есть инвойс, оплачиваем его. Если нет - покупаем товар напрямую.
         const urlParams = new URLSearchParams(window.location.search);
         const transactionIdFromUrl = urlParams.get('_ptxn');
 
         document.getElementById('pay-button').addEventListener('click', function() {
-            
-            // Если мы пришли по ссылке из инвойса и у нас есть ID транзакции
             if (transactionIdFromUrl) {
-                console.log("Оплачиваем инвойс:", transactionIdFromUrl);
+                // Оплата по ссылке из инвойса
                 Paddle.Checkout.open({
-                    transactionId: transactionIdFromUrl, // Передаем ID счета вместо товара
-                    settings: {
-                        displayMode: "overlay",
-                        locale: "ru"
-                    }
+                    transactionId: transactionIdFromUrl,
+                    settings: { displayMode: "overlay", locale: "ru" }
                 });
             } else {
-                // Если зашли на сайт просто так — открываем обычную покупку Премиума
-                console.log("Обычная покупка товара");
+                // Обычный вызов товара по его Price ID
                 Paddle.Checkout.open({
                     items: [{
                         priceId: "pri_01m1mn9bh6ktksze0sgtych7mg",
                         quantity: 1
                     }],
-                    settings: {
-                        displayMode: "overlay",
-                        locale: "ru"
-                    }
+                    settings: { displayMode: "overlay", locale: "ru" }
                 });
             }
         });
