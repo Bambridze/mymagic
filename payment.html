@@ -3,41 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <title>Тест оплаты S PRODUCTION</title>
-    <!-- Подключаем Paddle.js -->
     <script src="https://paddle.com"></script>
 </head>
 <body style="font-family: sans-serif; text-align: center; padding-top: 100px;">
 
     <button id="pay-button" style="background: #2196F3; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 6px; cursor: pointer; font-weight: bold;">
-        Купить Премиум
+        Оплатить счет
     </button>
 
     <script>
-        // Настройка среды
         Paddle.Environment.set("sandbox");
-        
-        // Инициализация (ВСТАВЬ СВОЙ КЛИЕНТСКИЙ ТОКЕН ТУТ)
         Paddle.Initialize({ 
             token: "test_162de7add7ab96901f3143b6036" 
         });
 
-        // Вызов чекаута по клику
+        // Хитрый скрипт: вытаскиваем номер транзакции из адреса страницы
+        const urlParams = new URLSearchParams(window.location.search);
+        const transactionIdFromUrl = urlParams.get('_ptxn');
+
         document.getElementById('pay-button').addEventListener('click', function() {
-            Paddle.Checkout.open({
-                settings: {
-                    displayMode: "overlay",
-                    locale: "ru"
-                },
-                items: [
-                    {
-                        priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой ID Премиума
-                        quantity: 1
+            
+            // Если мы пришли по ссылке из инвойса и у нас есть ID транзакции
+            if (transactionIdFromUrl) {
+                console.log("Оплачиваем инвойс:", transactionIdFromUrl);
+                Paddle.Checkout.open({
+                    transactionId: transactionIdFromUrl, // Передаем ID счета вместо товара
+                    settings: {
+                        displayMode: "overlay",
+                        locale: "ru"
                     }
-                ],
-                customer: {
-                    email: "test-valera@example.com"
-                }
-            });
+                });
+            } else {
+                // Если зашли на сайт просто так — открываем обычную покупку Премиума
+                console.log("Обычная покупка товара");
+                Paddle.Checkout.open({
+                    items: [{
+                        priceId: "pri_01m1mn9bh6ktksze0sgtych7mg",
+                        quantity: 1
+                    }],
+                    settings: {
+                        displayMode: "overlay",
+                        locale: "ru"
+                    }
+                });
+            }
         });
     </script>
 </body>
