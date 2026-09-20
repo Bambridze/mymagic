@@ -2,32 +2,32 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тест оплаты S PRODUCTION</title>
-    <!-- 1. Подключаем правильный скрипт Paddle v3 -->
+    <!-- Подключаем Paddle.js -->
     <script src="https://paddle.com"></script>
 </head>
-<body style="font-family: sans-serif; text-align: center; padding-top: 100px; background-color: #f4f4f9;">
+<body style="font-family: sans-serif; text-align: center; padding-top: 100px;">
 
-    <div style="background: white; display: inline-block; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-        <h2 style="margin-bottom: 10px;">S PRODUCTION</h2>
-        <p style="color: #666; margin-bottom: 30px;">Тестирование активации Премиума</p>
-        
-        <button id="pay-button" style="background: #2196F3; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 6px; cursor: pointer; font-weight: bold;">
-            Купить Премиум
-        </button>
-    </div>
+    <button id="pay-button" style="background: #2196F3; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+        Купить Премиум
+    </button>
 
     <script>
-        // 2. Правильная инициализация Paddle v3 строго по инструкции
+        // Настройка среды
         Paddle.Environment.set("sandbox");
+        
+        // Инициализация (ВСТАВЬ СВОЙ КЛИЕНТСКИЙ ТОКЕН ТУТ)
         Paddle.Initialize({ 
-            token: "test_YOUR_TOKEN" // СЮДА СВОЙ ТОКЕН ВСТАВЛЯЙ
+            token: "test_162de7add7ab96901f3143b6036" 
         });
 
-        // 3. Открытие чекаута через правильный вызов v3
+        // Вызов чекаута по клику
         document.getElementById('pay-button').addEventListener('click', function() {
             Paddle.Checkout.open({
+                settings: {
+                    displayMode: "overlay",
+                    locale: "ru"
+                },
                 items: [
                     {
                         priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой ID Премиума
