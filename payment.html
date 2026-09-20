@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тест оплаты S PRODUCTION</title>
-    <!-- Подключаем скрипт Paddle v3 -->
+    <!-- 1. Подключаем правильный скрипт Paddle v3 -->
     <script src="https://paddle.com"></script>
 </head>
 <body style="font-family: sans-serif; text-align: center; padding-top: 100px; background-color: #f4f4f9;">
@@ -19,21 +19,15 @@
     </div>
 
     <script>
-        document.getElementById('pay-button').addEventListener('click', function() {
-            // Включаем песочницу СТРОГО в момент клика
-            Paddle.Environment.set("sandbox");
-            
-            // Инициализируем и сразу же открываем чекаут, не давая скрипту уйти в блок домена
-            Paddle.Initialize({ 
-                token: "ТВОЙ_ТОКЕН_ЗДЕСЬ" 
-            });
+        // 2. Правильная инициализация Paddle v3 строго по инструкции
+        Paddle.Environment.set("sandbox");
+        Paddle.Initialize({ 
+            token: "test_YOUR_TOKEN" // СЮДА СВОЙ ТОКЕН ВСТАВЛЯЙ
+        });
 
-            // Запускаем окно оплаты
+        // 3. Открытие чекаута через правильный вызов v3
+        document.getElementById('pay-button').addEventListener('click', function() {
             Paddle.Checkout.open({
-                settings: {
-                    displayMode: "overlay",
-                    locale: "ru"
-                },
                 items: [
                     {
                         priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой ID Премиума
