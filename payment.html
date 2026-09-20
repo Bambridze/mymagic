@@ -2,17 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тест оплаты S PRODUCTION</title>
-    
-    <!-- 1. Подключаем Paddle v3 строго в head, как требует дока -->
+    <!-- Официальный скрипт-загрузчик Paddle v3 -->
     <script src="https://paddle.com"></script>
-    <script type="text/javascript">
-        // 2. Инициализируем сразу при загрузке, чтобы домен прошёл проверку безопасности
-        Paddle.Environment.set("sandbox");
-        Paddle.Initialize({ 
-            token: "test_162de7add7ab96901f3143b6036" 
-        });
-    </script>
 </head>
 <body style="font-family: sans-serif; text-align: center; padding-top: 100px; background-color: #f4f4f9;">
 
@@ -26,27 +19,44 @@
     </div>
 
     <script type="text/javascript">
-        // 3. Логика кнопки: если в ссылке есть инвойс, оплачиваем его. Если нет - покупаем товар напрямую.
-        const urlParams = new URLSearchParams(window.location.search);
-        const transactionIdFromUrl = urlParams.get('_ptxn');
+        // Переменная, где будет храниться рабочий объект платежки
+        let paddleInstance;
 
+        // ПРАВИЛЬНЫЙ запуск Paddle v3 через асинхронный метод библиотеки
+        Paddle.Environment.set("sandbox");
+        Paddle.Initialize({ 
+            token: "test_162de7add7ab96901f3143b6036" 
+        }).then((instance) => {
+            // Как только Пэддл загрузился, сохраняем его рабочую копию
+            paddleInstance = instance;
+            console.log("Paddle v3 успешно инициализирован!");
+        }).catch((error) => {
+            alert("Ошибка загрузки Paddle: " + error.message);
+        });
+
+        // Клик по кнопке
         document.getElementById('pay-button').addEventListener('click', function() {
-            if (transactionIdFromUrl) {
-                // Оплата по ссылке из инвойса
-                Paddle.Checkout.open({
-                    transactionId: transactionIdFromUrl,
-                    settings: { displayMode: "overlay", locale: "ru" }
-                });
-            } else {
-                // Обычный вызов товара по его Price ID
-                Paddle.Checkout.open({
-                    items: [{
-                        priceId: "pri_01m1mn9bh6ktksze0sgtych7mg",
-                        quantity: 1
-                    }],
-                    settings: { displayMode: "overlay", locale: "ru" }
-                });
+            if (!paddleInstance) {
+                alert("Платежная система еще загружается, подождите секунду...");
+                return;
             }
+
+            // Вызываем чекаут через сохраненный объект, как требует дока v3
+            paddleInstance.Checkout.open({
+                settings: {
+                    displayMode: "overlay",
+                    locale: "ru"
+                },
+                items: [
+                    {
+                        priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой ID Премиума
+                        quantity: 1
+                    }
+                ],
+                customer: {
+                    email: "test-valera@example.com"
+                }
+            });
         });
     </script>
 </body>
