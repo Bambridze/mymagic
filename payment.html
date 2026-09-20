@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тест оплаты S PRODUCTION</title>
     
-    <!-- 1. Подключаем официальную библиотеку Paddle v3 -->
+    <!-- 1. Подключаем скрипт Paddle v3 -->
     <script src="https://paddle.com"></script>
     
     <script type="text/javascript">
-        // 2. Инициализируем среду песочницы сразу в шапке
+        // 2. Инициализируем песочницу строго в head
         Paddle.Environment.set("sandbox");
         Paddle.Initialize({ 
             token: "test_162de7add7ab96901f3143b6036" 
@@ -22,30 +22,30 @@
         <h2>S PRODUCTION</h2>
         <p style="color: #666; margin-bottom: 30px;">Тестирование активации Премиума</p>
         
-        <!-- 3. Важно: кнопке ОБЯЗАТЕЛЬНО нужен атрибут data-theme, иначе v3 её не увидит -->
-        <button id="pay-button" data-theme="light" style="background: #2196F3; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+        <button id="pay-button" style="background: #2196F3; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 6px; cursor: pointer; font-weight: bold;">
             Купить Премиум
         </button>
     </div>
 
     <script type="text/javascript">
-        // 4. Правильный вызов оверлея в v3: привязываем скрипт к конкретной кнопке по её ID
-        Paddle.Checkout.open({
-            settings: {
-                displayMode: "overlay",
-                locale: "ru",
-                frameTarget: "pay-button", // Указываем ID кнопки, которую Paddle должен оживить
-                frameInitialHeight: "450"
-            },
-            items: [
-                {
-                    priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой ID Премиума
-                    quantity: 1
+        // 3. Прямой вызов overlay + one-page строго по твоей инструкции
+        document.getElementById('pay-button').addEventListener('click', function() {
+            Paddle.Checkout.open({
+                settings: {
+                    displayMode: "overlay",  // Всплывающее окно
+                    variant: "one-page",     // Одностраничный чекаут
+                    locale: "ru"
+                },
+                items: [
+                    {
+                        priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой ID Премиума
+                        quantity: 1
+                    }
+                ],
+                customer: {
+                    email: "test-valera@example.com"
                 }
-            ],
-            customer: {
-                email: "test-valera@example.com"
-            }
+            });
         });
     </script>
 </body>
