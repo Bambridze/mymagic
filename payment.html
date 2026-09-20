@@ -4,8 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тест оплаты S PRODUCTION</title>
-    <!-- 1. Подключаем скрипт Пэддла -->
-    <script src="https://paddle.com"></script>
+    
+    <!-- 1. ПОДКЛЮЧАЕМ ПРАВИЛЬНЫЙ ИНСТРУМЕНТ ИЗ ДОКУМЕНТАЦИИ -->
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+    
+    <script type="text/javascript">
+        // 2. Инициализируем песочницу
+        Paddle.Environment.set("sandbox");
+        Paddle.Initialize({ 
+            token: "test_162de7add7ab96901f3143b6036" 
+        });
+    </script>
 </head>
 <body style="font-family: sans-serif; text-align: center; padding-top: 100px; background-color: #f4f4f9;">
 
@@ -19,37 +28,23 @@
     </div>
 
     <script type="text/javascript">
-        // 2. Ждем, пока весь сайт и библиотека Paddle ПОЛНОСТЬЮ загрузятся в браузер
-        window.addEventListener('load', function() {
-            
-            // Включаем песочницу
-            Paddle.Environment.set("sandbox");
-            
-            // Инициализируем твоим токеном
-            Paddle.Initialize({ 
-                token: "test_162de7add7ab96901f3143b6036" 
-            });
-
-            console.log("Paddle.js полностью готов к работе!");
-
-            // 3. Только ТЕПЕРЬ, когда Paddle железно готов, вешаем событие на кнопку
-            document.getElementById('pay-button').addEventListener('click', function() {
-                Paddle.Checkout.open({
-                    settings: {
-                        displayMode: "overlay",
-                        variant: "one-page", // Одностраничный чекаут из твоей подсказки
-                        locale: "ru"
-                    },
-                    items: [
-                        {
-                            priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой ID Премиума
-                            quantity: 1
-                        }
-                    ],
-                    customer: {
-                        email: "test-valera@example.com"
+        // 3. Вызов чекаута по клику
+        document.getElementById('pay-button').addEventListener('click', function() {
+            Paddle.Checkout.open({
+                settings: {
+                    displayMode: "overlay",
+                    variant: "one-page",
+                    locale: "ru"
+                },
+                items: [
+                    {
+                        priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой ID Премиума
+                        quantity: 1
                     }
-                });
+                ],
+                customer: {
+                    email: "test-valera@example.com"
+                }
             });
         });
     </script>
