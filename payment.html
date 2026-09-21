@@ -1,50 +1,64 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест оплаты S PRODUCTION</title>
-    
-    <!-- 1. ПОДКЛЮЧАЕМ ПРАВИЛЬНЫЙ ИНСТРУМЕНТ ИЗ ДОКУМЕНТАЦИИ -->
-    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
-    
+    <title>S PRODUCTION — Checkout</title>
+    <!-- Подключаем Paddle v3 -->
+    <script src="https://paddle.com"></script>
     <script type="text/javascript">
-        // 2. Инициализируем песочницу
         Paddle.Environment.set("sandbox");
-        Paddle.Initialize({ 
-            token: "test_162de7add7ab96901f3143b6036" 
-        });
+        Paddle.Initialize({ token: "test_162de7add7ab96901f3143b6036" });
     </script>
 </head>
-<body style="font-family: sans-serif; text-align: center; padding-top: 100px; background-color: #f4f4f9;">
+<body style="font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #f4f4f9;">
 
-    <div style="background: white; display: inline-block; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-        <h2>S PRODUCTION</h2>
-        <p style="color: #666; margin-bottom: 30px;">Тестирование активации Премиума</p>
-        
-        <button id="pay-button" style="background: #2196F3; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 6px; cursor: pointer; font-weight: bold;">
-            Купить Премиум
+    <div style="background: white; display: inline-block; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 400px; width: 100%; box-sizing: border-box;">
+        <h2 id="product-title">Loading product...</h2>
+        <!-- Сюда Paddle сам вставит локализованную цену в валюте юзера -->
+        <p style="font-size: 24px; font-weight: bold; color: #2196F3; margin: 20px 0;" id="product-price">...</p>
+        <button id="pay-button" style="background: #2196F3; color: white; border: none; padding: 15px 40px; font-size: 18px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%;">
+            Buy Now
         </button>
     </div>
 
     <script type="text/javascript">
-        // 3. Вызов чекаута по клику
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentProd = urlParams.get('prod');
+
+        // Твои реальные Price ID из каталога
+        const PREMIUM_PRICE_ID = "pri_01m1mn9bh6ktksze0sgtych7mg";
+        const ENERGY_PRICE_ID = "pri_01m1p1jnmyw6dnjw884kk2x5dy"; 
+
+        let targetPriceId = PREMIUM_PRICE_ID;
+        let productLabel = "MyMagic Full Customization Pass";
+
+        if (currentProd === 'energy') {
+            targetPriceId = ENERGY_PRICE_ID;
+            productLabel = "MyMagic Energy Pack";
+        }
+
+        document.getElementById('product-title').innerText = productLabel;
+
+        // Запрашиваем цену. Paddle вернет её в валюте пользователя (в лари, евро, долларах и т.д.)
+        Paddle.PricePreview({
+            items: [{ priceId: targetPriceId, quantity: 1 }]
+        }).then((result) => {
+            document.getElementById('product-price').innerText = result.data.details.totals.formattedTotal;
+        }).catch((err) => {
+            document.getElementById('product-price').innerText = "Error loading price";
+        });
+
+        // Открытие чекаута
         document.getElementById('pay-button').addEventListener('click', function() {
             Paddle.Checkout.open({
                 settings: {
                     displayMode: "overlay",
-                    variant: "one-page",
-                    locale: "ru"
+                    variant: "one-page"
+                    // Убрали строку locale: "ru", теперь язык формы подстроится под систему юзера автоматически!
                 },
-                items: [
-                    {
-                        priceId: "pri_01m1mn9bh6ktksze0sgtych7mg", // Твой ID Премиума
-                        quantity: 1
-                    }
-                ],
-                customer: {
-                    email: "test-valera@example.com"
-                }
+                items: [{ priceId: targetPriceId, quantity: 1 }],
+                customer: { email: "support@://it.com" }
             });
         });
     </script>
